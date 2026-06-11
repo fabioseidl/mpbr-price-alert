@@ -1,6 +1,6 @@
 # mpbr-price-alert
 
-> Os dados são obtidos por meio de uma API pública governamental associada ao CPF informado. Utilize este recurso de forma consciente e responsável.
+> Os dados são obtidos por meio de uma API pública do governo associada ao seu CPF. Utilize este recurso de forma consciente e responsável.
 > >
 > Para evitar sobrecarga nos serviços consultados, recomendamos limitar o uso a uma ou duas consultas por dia. Evite requisições excessivas.
 
