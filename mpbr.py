@@ -237,7 +237,7 @@ def cheapest(itens: list[dict]) -> dict | None:
 
 # --- alerting --------------------------------------------------------------
 def notify(cfg: dict, subject: str, body: str) -> None:
-    print(f"\n {subject}\n{body}\n")
+    print(f"\n{subject}\n{body}\n")
 
     hook = cfg.get("webhook_url")
     if hook:
