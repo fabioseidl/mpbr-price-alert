@@ -4,6 +4,11 @@
   "raio_km": 10,
   "dias": 3,
   "webhook_url": "",
+  "pushover": {
+    "token": "YOUR_PUSHOVER_APP_TOKEN",
+    "user": "YOUR_PUSHOVER_USER_KEY",
+    "priority": 0
+  },
   "produtos": [
     { "nome": "Coca-Cola 2L",   "gtin": "7894900011517", "preco_alvo": 8.50 },
     { "nome": "Leite integral", "gtin": "7891000000000", "preco_alvo": null }

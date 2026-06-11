@@ -238,12 +238,32 @@ def cheapest(itens: list[dict]) -> dict | None:
 # --- alerting --------------------------------------------------------------
 def notify(cfg: dict, subject: str, body: str) -> None:
     print(f"\n🔔 {subject}\n{body}\n")
+
     hook = cfg.get("webhook_url")
     if hook:
         try:
             requests.post(hook, json={"text": f"*{subject}*\n{body}"}, timeout=15)
         except Exception as e:  # noqa: BLE001 - alerting must never crash the run
             print(f"   (webhook failed: {e})")
+
+    po = cfg.get("pushover")
+    if po and po.get("token") and po.get("user"):
+        data = {
+            "token": po["token"],
+            "user": po["user"],
+            "title": subject,
+            "message": body,
+            "priority": po.get("priority", 0),
+        }
+        if po.get("device"):
+            data["device"] = po["device"]
+        try:
+            resp = requests.post("https://api.pushover.net/1/messages.json", data=data, timeout=15)
+            if resp.status_code != 200:
+                errs = _safe_json(resp).get("errors") or [resp.text[:200]]
+                print(f"   (pushover rejected HTTP {resp.status_code}: {'; '.join(errs)})")
+        except Exception as e:  # noqa: BLE001 - alerting must never crash the run
+            print(f"   (pushover failed: {e})")
 
 
 def fmt_store(est: dict) -> str:
@@ -254,6 +274,21 @@ def fmt_store(est: dict) -> str:
     km = est.get("kmDistancia")
     km_s = f" — {km:.1f} km" if isinstance(km, (int, float)) else ""
     return f"{name} ({addr}{km_s})"
+
+
+def notify_test() -> None:
+    cfg = load_json(CONFIG_PATH)
+    if not cfg:
+        sys.exit("No config. Copy config.example.json to config.json and edit it.")
+    if not cfg.get("webhook_url") and not (cfg.get("pushover", {}) or {}).get("token"):
+        print("No notification channel configured (webhook_url / pushover). "
+              "Showing the test locally only.")
+    notify(
+        cfg,
+        "Test — MPBR price alert",
+        f"This is a test notification sent at "
+        f"{datetime.now(timezone.utc).isoformat(timespec='seconds')}.",
+    )
 
 
 # --- run -------------------------------------------------------------------
@@ -318,6 +353,7 @@ def main() -> None:
     p_imp.add_argument("json", nargs="?", help="ticket JSON; if omitted, read from stdin prompt")
     sub.add_parser("run", help="poll watched GTINs and alert on price drops")
     sub.add_parser("token", help="print a valid access_token (debug)")
+    sub.add_parser("notify-test", help="send a test notification through the configured channels")
     args = ap.parse_args()
 
     if args.cmd == "login":
@@ -328,6 +364,8 @@ def main() -> None:
         run()
     elif args.cmd == "token":
         print(refresh_access_token())
+    elif args.cmd == "notify-test":
+        notify_test()
 
 
 if __name__ == "__main__":
