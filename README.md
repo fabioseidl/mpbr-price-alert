@@ -1,5 +1,9 @@
 # mpbr-price-alert
 
+> Os dados são obtidos por meio de uma API pública governamental associada ao CPF informado. Utilize este recurso de forma consciente e responsável.
+> >
+> Para evitar sobrecarga nos serviços consultados, recomendamos limitar o uso a uma ou duas consultas por dia. Evite requisições excessivas.
+
 Alertas de queda de preço para o serviço **Menor Preço Brasil**.
 
 ## 1. Configurar
